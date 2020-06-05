@@ -2,6 +2,7 @@ import sqlite3
 from sqlite3 import Error
 import os
 import praw
+import instabot
 
 class database:
     def __init__(self, db_file):

@@ -1,26 +1,24 @@
 from classes import reddit
-from random import randint
+from random import choice, sample
 from praw import models
 import db
 
 bot = None
-subreddit_pool = ['dankmemes', 'PewdiepieSubmissions']
+subreddit_pool = ['dankmemes', 'PewdiepieSubmissions', 'BlackPeopleTwitter']
 
 def main():
     global bot
-
     bot = reddit()
 
-def get_post(limit=5):
-    posts = bot.get_hot(subreddit_pool[randint(0, len(subreddit_pool)-1)], limit)
-    post:models.reddit.submission.Submission = None
-    for _post in posts:
+def get_post(limit=5)->models.reddit.submission.Submission:
+    posts = list(bot.get_hot(choice(subreddit_pool), limit))
+    for _post in sample(posts, len(posts)):
         if db.get_post_by_reddit_id(_post.id) == None:
-            post = _post
-            break
-    if post == None:
-        get_post(limit+5)
-    return post
+            if _post.is_self == False:
+                if any(format in  _post.url for format in ['jpg','png', 'jpeg']):
+                    return _post
+    print("No Hits")
+    return get_post(limit+5)
 
     
 
