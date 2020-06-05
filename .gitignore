@@ -133,3 +133,4 @@ dmypy.json
 
 images/
 config/
+main.db
