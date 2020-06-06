@@ -3,7 +3,7 @@ import instabot
 import reddit
 import db
 import os
-from PIL import Image
+from classes import reddit_post
 from random import choice
 from time import sleep
 
@@ -27,63 +27,23 @@ def logout():
     bot.logout()
 
 def post_cycle():
-    reddit_post = reddit.get_post()
-    print(reddit_post)
-    image = get_image(reddit_post)
-    insta_id = post_image(image, reddit_post)
+    _reddit_post = reddit.get_post()
+    print(_reddit_post.id)
+    post = reddit_post(_reddit_post)
+    post.dl_content()
+    post.post_process()
+    insta_id = post_image(post)
     post_comment(insta_id)
 
-def post_image(img, reddit_post):
-    img = process_image(img)
-    insta_post = bot.upload_photo(img, reddit_post.title)
+def post_image(post:reddit_post):
+    insta_post = bot.upload_photo(post.path, post.post.title)
     insta_id = insta_post['pk']
-    db.add_post(reddit_post.title, img, reddit_post.id, insta_id)
-    os.rename(img+'.REMOVE_ME', img)
+    db.add_post(post.post.title, post.path, post.id, insta_id)
+    os.rename(post.path+'.REMOVE_ME', post.path)
     return insta_id
 
 def post_comment(insta_id):
     bot.comment(insta_id, choice(hashtag_pool))
-
-def get_image(post):
-    extension = post.url.split('.')[-1]
-
-    r = requests.get(post.url, stream=True)
-    if r.status_code == 200:
-        r.raw.decode_content = True
-        if not os.path.exists('./images'):
-            os.makedirs('./images')
-        path = os.path.join('./images', post.id+'.'+extension)
-        with open(path, 'wb') as f:
-            f.write(r.content)
-        
-        return path
-    else:
-        get_image(post)
-
-def process_image(path):
-    im = Image.open(path)
-    if '.png' in path or '.jpeg' in path:
-        os.remove(path)
-        path = path.replace('.png', '.jpg')
-        path = path.replace('.jpeg', '.jpg')
-        
-    im_new = expand2square(im, (255,255,255))
-    rgb_im = im_new.convert('RGB')
-    rgb_im.save(path, quality=95)
-    return path
-
-def expand2square(pil_img, background_color):
-    width, height = pil_img.size
-    if width == height:
-        return pil_img
-    elif width > height:
-        result = Image.new(pil_img.mode, (width, width), background_color)
-        result.paste(pil_img, (0, (width - height) // 2))
-        return result
-    else:
-        result = Image.new(pil_img.mode, (height, height), background_color)
-        result.paste(pil_img, ((height - width) // 2, 0))
-        return result
     
 
     
