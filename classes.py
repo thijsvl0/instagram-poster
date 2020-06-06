@@ -6,6 +6,7 @@ import instabot
 import requests
 from PIL import Image
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class database:
     def __init__(self, db_file):
@@ -65,9 +66,9 @@ class reddit_post:
         r = requests.get(self.url)
         if r.status_code == 200:
             r.raw.decode_content = True
-            if not os.path.exists(os.path.abspath('images')):
-                os.makedirs(os.path.abspath('images'))
-            self.path = os.path.abspath('images/{}'.format(self.name))
+            if not os.path.exists(os.path.join(ROOT_DIR, 'images')):
+                os.makedirs(os.path.join(ROOT_DIR, 'images'))
+            self.path = os.path.join(ROOT_DIR,'images',self.name)
             with open(self.path, 'wb') as f:
                 f.write(r.content)
 

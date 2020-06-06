@@ -1,11 +1,12 @@
 from datetime import datetime
-from classes import database
+from classes import database, ROOT_DIR
+import os
 
 db = None
 
 def main():
     global db
-    db = database('main.db')
+    db = database(os.path.join(ROOT_DIR,'main.db'))
     make_posts_table()
 
 def make_posts_table():

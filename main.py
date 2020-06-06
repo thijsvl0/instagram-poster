@@ -3,6 +3,8 @@ import reddit
 import instagram
 from random import randint
 import sched, time
+from classes import ROOT_DIR
+import os
 
 freq = 10800
 def main():
@@ -26,7 +28,7 @@ def sched_poster(schedule):
 #     main()
 
 if __name__ == "__main__":
-    load_dotenv('./.env')
+    load_dotenv(os.path.join(ROOT_DIR,'.env'))
     reddit.main()
     instagram.main()
     main()
