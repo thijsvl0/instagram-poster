@@ -1,24 +1,20 @@
-from dotenv import load_dotenv
 import reddit
 import instagram
+from db import db
 from random import randint
 import sched, time
-from classes import ROOT_DIR
-import os
+from dependencies import ROOT_DIR
 
-freq = 10800
 def main():
     schedule = sched.scheduler(time.time, time.sleep)
-    instagram.login()
     schedule.enter(1, 1, sched_poster, (schedule,))
     schedule.run()
-    
+
 def sched_poster(schedule):
     freq = (10800+((120*randint(0, 50))/2)/2)
-    print('{} Sec till next post'.format(freq))
-
     try:
         instagram.post_cycle()
+        print('{} Sec till next post'.format(freq))
     except TypeError:
         schedule.enter(freq,1, sched_poster, (schedule,))
 
@@ -28,7 +24,4 @@ def sched_poster(schedule):
 #     main()
 
 if __name__ == "__main__":
-    load_dotenv(os.path.join(ROOT_DIR,'.env'))
-    reddit.main()
-    instagram.main()
     main()
