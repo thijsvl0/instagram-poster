@@ -13,7 +13,7 @@ more-itertools==8.3.0
 moviepy==1.0.3
 numpy==1.18.5
 packaging==20.4
-Pillow==7.1.2
+Pillow==8.2.0
 pluggy==0.13.1
 praw==7.0.0
 prawcore==1.4.0
